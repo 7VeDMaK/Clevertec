@@ -9,13 +9,15 @@ public class CheckRunner {
     static final String CSV_PRODUCTS_FILE_NAME = "./src/main/resources/products.csv";
     private static final Map<Integer, Integer> discountCardMap = new HashMap<>();
     private static final Map<Integer, Product> productMap = new HashMap<>();
+    private static final CheckDataToCSVConverter converter = new CheckDataToCSVConverter();
 
     static {
         try {
             loadDiscountCards();
             loadProducts();
         } catch (IOException e) {
-            System.err.println("Error loading discount cards or products: " + e.getMessage());
+            converter.writeErrorToCSV(CSV_RESULT_FILE_NAME, "INTERNAL SERVER ERROR");
+            throw new CheckException("INTERNAL SERVER ERROR");
         }
     }
 
@@ -105,7 +107,6 @@ public class CheckRunner {
     public static void main(String[] args) throws IOException {
         args = new String[]{"3-1", "2-5", "5-1", "3-1", "discountCard=9999", "balanceDebitCard=100.1"};
         CheckRunner checkRunner = new CheckRunner();
-        CheckDataToCSVConverter converter = new CheckDataToCSVConverter();
         try {
             CheckInfo checkInfo = checkRunner.CreateCheckInfo(args);
             System.out.println(Arrays.toString(args));
