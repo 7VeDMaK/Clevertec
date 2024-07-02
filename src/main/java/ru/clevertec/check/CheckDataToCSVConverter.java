@@ -65,7 +65,7 @@ public class CheckDataToCSVConverter {
             double price = product.getPrice();
             double itemTotal = price * quantity;
 
-            double discountPercentage = (quantity >= 5) ? 10.0 : CheckRunner.getDiscount(checkInfo.getDiscountCard());
+            double discountPercentage = (quantity >= 5 && product.isWholesale()) ? 10.0 : CheckRunner.getDiscount(checkInfo.getDiscountCard());
             double discount = (double) Math.round(itemTotal * discountPercentage) / 100;
 
             total += itemTotal;

@@ -1,11 +1,11 @@
 package main.java.ru.clevertec.check;
 
 public class Product {
-    private int id;
-    private String description;
-    private double price;
-    private int quantityInStock;
-    private boolean wholesale;
+    private final int id;
+    private final String description;
+    private final double price;
+    private final int quantityInStock;
+    private final boolean wholesale;
 
     public Product(int id, String description, double price, int quantityInStock, boolean wholesale) {
         this.id = id;

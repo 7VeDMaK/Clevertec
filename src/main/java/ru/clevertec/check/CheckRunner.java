@@ -1,7 +1,11 @@
 package main.java.ru.clevertec.check;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CheckRunner {
     static final String CSV_RESULT_FILE_NAME = "result.csv";
@@ -104,8 +108,7 @@ public class CheckRunner {
 
     }
 
-    public static void main(String[] args) throws IOException {
-        args = new String[]{"8-5", "2-7", "5-1", "4-1", "discountCard=1111", "balanceDebitCard=100.1"};
+    public static void main(String[] args) {
         CheckRunner checkRunner = new CheckRunner();
         try {
             CheckInfo checkInfo = checkRunner.CreateCheckInfo(args);
@@ -117,7 +120,6 @@ public class CheckRunner {
         } catch (Exception e) {
             System.err.println(e.getMessage());
             converter.writeErrorToCSV(CSV_RESULT_FILE_NAME, e.getMessage());
-
         }
     }
 }

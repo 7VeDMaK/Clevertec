@@ -3,9 +3,9 @@ package main.java.ru.clevertec.check;
 import java.util.Map;
 
 public class CheckInfo {
-    private Map<String, Integer> productQuantities;
+    private final Map<String, Integer> productQuantities;
     private Integer discountCard = null;
-    private Double balanceDebitCard;
+    private final Double balanceDebitCard;
 
     public CheckInfo(Map<String, Integer> productQuantities, String discountCard, String balanceDebitCard) {
         this.productQuantities = productQuantities;
