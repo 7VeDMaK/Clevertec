@@ -4,13 +4,14 @@ import java.util.Map;
 
 public class CheckInfo {
     private Map<String, Integer> productQuantities;
-    private Integer discountCard;
+    private Integer discountCard = null;
     private Double balanceDebitCard;
 
-    public CheckInfo(Map<String, Integer> productQuantities, Integer discountCard, Double balanceDebitCard) {
+    public CheckInfo(Map<String, Integer> productQuantities, String discountCard, String balanceDebitCard) {
         this.productQuantities = productQuantities;
-        this.discountCard = discountCard;
-        this.balanceDebitCard = balanceDebitCard;
+        if (discountCard != null)
+            this.discountCard = Integer.parseInt(discountCard.split("=")[1]);
+        this.balanceDebitCard = Double.parseDouble(balanceDebitCard.split("=")[1]);
     }
 
     @Override

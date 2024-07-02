@@ -25,6 +25,10 @@ public class CheckDataToCSVConverter {
         return escapedData;
     }
 
+    private String formatPrice(double price) {
+        return String.format("%.2f$", price);
+    }
+
     private String convertToCSV(String[] data) {
         return Stream.of(data)
                 .map(this::escapeSpecialCharacters)
@@ -53,8 +57,9 @@ public class CheckDataToCSVConverter {
             int quantity = entry.getValue();
             double price = product.getPrice();
             double itemTotal = price * quantity;
-            double discountPercentage = CheckRunner.getDiscount(checkInfo.getDiscountCard());
-            double discount = itemTotal * discountPercentage / 100.0;
+
+            double discountPercentage = (quantity >= 5) ? 10.0 : CheckRunner.getDiscount(checkInfo.getDiscountCard());
+            double discount = (double) Math.round(itemTotal * discountPercentage) / 100;
 
             total += itemTotal;
             totalDiscount += discount;
@@ -62,18 +67,22 @@ public class CheckDataToCSVConverter {
             dataLines.add(new String[]{
                     String.valueOf(quantity),
                     product.getDescription(),
-                    String.format("%.2f$", price),
-                    String.format("%.2f$", discount),
-                    String.format("%.2f$", itemTotal)
+                    formatPrice(price),
+                    formatPrice(discount),
+                    formatPrice(itemTotal)
             });
         }
 
-        dataLines.add(new String[]{""});
-        dataLines.add(new String[]{"DISCOUNT CARD", "DISCOUNT PERCENTAGE"});
-        dataLines.add(new String[]{String.valueOf(checkInfo.getDiscountCard()), CheckRunner.getDiscount(checkInfo.getDiscountCard()) + "%"});
+        if (checkInfo.getDiscountCard() != null) {
+            dataLines.add(new String[]{""});
+            dataLines.add(new String[]{"DISCOUNT CARD", "DISCOUNT PERCENTAGE"});
+            dataLines.add(new String[]{String.valueOf(checkInfo.getDiscountCard()), CheckRunner.getDiscount(checkInfo.getDiscountCard()) + "%"});
+        }
         dataLines.add(new String[]{""});
         dataLines.add(new String[]{"TOTAL PRICE", "TOTAL DISCOUNT", "TOTAL WITH DISCOUNT"});
-        dataLines.add(new String[]{String.format("%.2f$", total), String.format("%.2f$", totalDiscount), String.format("%.2f$", total - totalDiscount)});
+        dataLines.add(new String[]{formatPrice(total), formatPrice(totalDiscount), formatPrice(total - totalDiscount)});
+
+        dataLines.forEach(line -> System.out.println(convertToCSV(line)));
 
         File csvOutputFile = new File(fileName);
         try (PrintWriter pw = new PrintWriter(csvOutputFile)) {
@@ -83,3 +92,5 @@ public class CheckDataToCSVConverter {
         }
     }
 }
+// если не хватает денег - ошибка
+// если нет дебитовой - без неё пробить

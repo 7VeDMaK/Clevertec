@@ -78,8 +78,7 @@ public class CheckRunner {
             }
         }
 
-        return new CheckInfo(productQuantities, Integer.parseInt(discountCard.split("=")[1]),
-                Double.parseDouble(balanceDebitCard.split("=")[1]));
+        return new CheckInfo(productQuantities, discountCard, balanceDebitCard);
 
     }
 
@@ -88,15 +87,17 @@ public class CheckRunner {
     }
 
     public static int getDiscount(Integer cardNumber) {
+        if (cardNumber == null) return 0;
         return discountCardMap.getOrDefault(cardNumber, 2);
     } // Сделать исключения
 
     public static void main(String[] args) throws IOException {
-        args = new String[]{"3-1", "2-5", "5-1", "3-1", "discountCard=1111", "balanceDebitCard=100"};
+        args = new String[]{"3-1", "2-5", "5-1", "3-1", "discountCard=1111", "balanceDebitCard=-100.01"};
         CheckRunner checkRunner = new CheckRunner();
         CheckDataToCSVConverter checkDataToCSVConverter = new CheckDataToCSVConverter();
         System.out.println(Arrays.toString(args));
         System.out.println(checkRunner.CreateCheckInfo(args));
+        System.out.println();
         checkDataToCSVConverter.convertCheckInfoToCSV(checkRunner.CreateCheckInfo(args), CSV_RESULT_FILE_NAME);
     }
-}
+}//проверка на то, что если товара не хватает на скалде - ошибка
