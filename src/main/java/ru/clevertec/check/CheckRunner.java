@@ -6,6 +6,52 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class CheckRunner {
+    public class Product {
+        private int id;
+        private String description;
+        private double price;
+        private int quantityInStock;
+        private boolean wholesale;
+
+        public Product(int id, String description, double price, int quantityInStock, boolean wholesale) {
+            this.id = id;
+            this.description = description;
+            this.price = price;
+            this.quantityInStock = quantityInStock;
+            this.wholesale = wholesale;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public double getPrice() {
+            return price;
+        }
+
+        public int getQuantityInStock() {
+            return quantityInStock;
+        }
+
+        public boolean isWholesale() {
+            return wholesale;
+        }
+
+        @Override
+        public String toString() {
+            return "Product{" +
+                    "id=" + id +
+                    ", description='" + description + '\'' +
+                    ", price=" + price +
+                    ", quantityInStock=" + quantityInStock +
+                    ", wholesale=" + wholesale +
+                    '}';
+        }
+    }
     public class CheckInfo {
         private Map<String, Integer> productQuantities;
         private Integer discountCard;
@@ -43,15 +89,27 @@ public class CheckRunner {
         }
     }
 
-    final String CSV_FILE_NAME = "result.csv";
+    static final String CSV_RESULT_FILE_NAME = "result.csv";
+    static final String CSV_DISCOUNT_CARDS_FILE_NAME = "./src/main/resources/discountCards.csv";
+    static final String CSV_PRODUCTS_FILE_NAME = "./src/main/resources/products.csv";
 
     private static final Map<Integer, Integer> discountCardMap = new HashMap<>();
+    private static final Map<Integer, Product> productMap = new HashMap<>();
 
     static {
         try {
             loadDiscountCards();
         } catch (IOException e) {
             System.err.println("Error loading discount cards: " + e.getMessage());
+        }
+
+    }
+
+    {
+        try {
+            loadProducts();
+        } catch (IOException e) {
+            System.err.println("Error loading products: " + e.getMessage());
         }
     }
 
@@ -74,15 +132,13 @@ public class CheckRunner {
                 .collect(Collectors.joining(","));
     }
 
-    public void givenDataArray_whenConvertToCSV_thenOutputCreated(CheckInfo checkInfo) throws IOException {
+    public void convertCheckInfoToCSV(CheckInfo checkInfo) throws IOException {
         List<String[]> dataLines = new ArrayList<>();
 
-        // Extract product quantities
         checkInfo.getProductQuantities().forEach((id, quantity) -> {
             dataLines.add(new String[]{id, String.valueOf(quantity)});
         });
 
-        // Add discount card and balance debit card
         if (checkInfo.getDiscountCard() != null) {
             dataLines.add(new String[]{"discountCard", checkInfo.getDiscountCard().toString()});
         }
@@ -90,7 +146,7 @@ public class CheckRunner {
             dataLines.add(new String[]{"balanceDebitCard", checkInfo.getBalanceDebitCard().toString()});
         }
 
-        File csvOutputFile = new File(CSV_FILE_NAME);
+        File csvOutputFile = new File(CSV_RESULT_FILE_NAME);
         try (PrintWriter pw = new PrintWriter(csvOutputFile)) {
             dataLines.stream()
                     .map(this::convertToCSV)
@@ -128,7 +184,7 @@ public class CheckRunner {
     }
 
     private static void loadDiscountCards() throws IOException {
-        try (BufferedReader br = new BufferedReader(new FileReader("./src/main/resources/discountCards.csv"))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(CSV_DISCOUNT_CARDS_FILE_NAME))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] values = line.split(" ");
@@ -141,9 +197,31 @@ public class CheckRunner {
         }
     }
 
+    private void loadProducts() throws IOException {
+        try (BufferedReader br = new BufferedReader(new FileReader(CSV_PRODUCTS_FILE_NAME))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] values = line.split(" ");
+                if (values.length == 6) {
+                    int id = Integer.parseInt(values[0]);
+                    String description = values[1];
+                    double price = Double.parseDouble(values[2]);
+                    int quantityInStock = Integer.parseInt(values[3]);
+                    boolean wholesale = values[4].equals("+");
+                    productMap.put(id, new Product(id, description, price, quantityInStock, wholesale));
+                }
+            }
+        }
+        System.out.println(productMap.toString());
+    }
+
+    public static Product getProductById(int id) {
+        return productMap.get(id);
+    }
+
     public static int getDiscount(Integer cardNumber) {
         if (cardNumber == null || cardNumber.toString().length() != 4) {
-            return 2;  // Default discount for invalid or non-4-digit numbers
+            return 2;
         }
         return discountCardMap.getOrDefault(cardNumber, 2);
     }
@@ -151,7 +229,15 @@ public class CheckRunner {
     public static void main(String[] args) throws IOException {
         CheckRunner checkRunner = new CheckRunner();
         System.out.println(Arrays.toString(args));
-        System.out.println(CheckRunner.getDiscount(checkRunner.printAllInfo(args).getDiscountCard()));
-        checkRunner.givenDataArray_whenConvertToCSV_thenOutputCreated(checkRunner.printAllInfo(args));
+        System.out.println(checkRunner.printAllInfo(args));
+        checkRunner.convertCheckInfoToCSV(checkRunner.printAllInfo(args));
+
+        int productId = 1; // For example
+        Product product = getProductById(productId);
+        if (product != null) {
+            System.out.println(product);
+        } else {
+            System.out.println("Product with id " + productId + " not found.");
+        }
     }
 }
