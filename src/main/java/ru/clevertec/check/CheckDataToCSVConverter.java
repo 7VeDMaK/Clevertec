@@ -52,8 +52,15 @@ public class CheckDataToCSVConverter {
         dataLines.add(new String[]{"QTY", "DESCRIPTION", "PRICE", "DISCOUNT", "TOTAL"});
 
         for (Map.Entry<String, Integer> entry : checkInfo.getProductQuantities().entrySet()) {
-            int productId = Integer.parseInt(entry.getKey());
-            Product product = CheckRunner.getProductById(productId);
+            int productId;
+            Product product;
+            try {
+                productId = Integer.parseInt(entry.getKey());
+                product = CheckRunner.getProductById(productId);
+            } catch (Exception e) {
+                throw new CheckException("BAD REQUEST");
+            }
+
             int quantity = entry.getValue();
             double price = product.getPrice();
             double itemTotal = price * quantity;
@@ -73,6 +80,10 @@ public class CheckDataToCSVConverter {
             });
         }
 
+        if (checkInfo.getBalanceDebitCard() < total - totalDiscount) {
+            throw new CheckException("NOT ENOUGH MONEY");
+        }
+
         if (checkInfo.getDiscountCard() != null) {
             dataLines.add(new String[]{""});
             dataLines.add(new String[]{"DISCOUNT CARD", "DISCOUNT PERCENTAGE"});
@@ -89,6 +100,15 @@ public class CheckDataToCSVConverter {
             dataLines.stream()
                     .map(this::convertToCSV)
                     .forEach(pw::println);
+        }
+    }
+
+    public void writeErrorToCSV(String fileName, String errorMessage) {
+        try (PrintWriter pw = new PrintWriter(fileName)) {
+            pw.println("ERROR");
+            pw.println(errorMessage);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

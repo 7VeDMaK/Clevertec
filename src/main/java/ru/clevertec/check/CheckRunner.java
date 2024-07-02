@@ -7,7 +7,6 @@ public class CheckRunner {
     static final String CSV_RESULT_FILE_NAME = "result.csv";
     static final String CSV_DISCOUNT_CARDS_FILE_NAME = "./src/main/resources/discountCards.csv";
     static final String CSV_PRODUCTS_FILE_NAME = "./src/main/resources/products.csv";
-
     private static final Map<Integer, Integer> discountCardMap = new HashMap<>();
     private static final Map<Integer, Product> productMap = new HashMap<>();
 
@@ -19,7 +18,6 @@ public class CheckRunner {
             System.err.println("Error loading discount cards or products: " + e.getMessage());
         }
     }
-
     private static void loadDiscountCards() throws IOException {
         try (BufferedReader br = new BufferedReader(new FileReader(CSV_DISCOUNT_CARDS_FILE_NAME))) {
             String line;
@@ -54,6 +52,15 @@ public class CheckRunner {
         }
     }
 
+    public static Product getProductById(int id) {
+        return productMap.get(id);
+    }
+
+    public static int getDiscount(Integer cardNumber) {
+        if (cardNumber == null) return 0;
+        return discountCardMap.getOrDefault(cardNumber, 2);
+    } // Сделать исключения
+
     public CheckInfo CreateCheckInfo(String[] args) {
         Map<String, Integer> productQuantities = new HashMap<>();
         String discountCard = null;
@@ -82,22 +89,20 @@ public class CheckRunner {
 
     }
 
-    public static Product getProductById(int id) {
-        return productMap.get(id);
-    }
-
-    public static int getDiscount(Integer cardNumber) {
-        if (cardNumber == null) return 0;
-        return discountCardMap.getOrDefault(cardNumber, 2);
-    } // Сделать исключения
-
     public static void main(String[] args) throws IOException {
-        args = new String[]{"3-1", "2-5", "5-1", "3-1", "discountCard=1111", "balanceDebitCard=-100.01"};
+        args = new String[]{"3-1", "2-5", "5-1", "3-1", "discountCard=1111", "balanceDebitCard=100.01"};
         CheckRunner checkRunner = new CheckRunner();
-        CheckDataToCSVConverter checkDataToCSVConverter = new CheckDataToCSVConverter();
+        CheckDataToCSVConverter converter = new CheckDataToCSVConverter();
         System.out.println(Arrays.toString(args));
         System.out.println(checkRunner.CreateCheckInfo(args));
         System.out.println();
-        checkDataToCSVConverter.convertCheckInfoToCSV(checkRunner.CreateCheckInfo(args), CSV_RESULT_FILE_NAME);
+        try {
+            CheckInfo checkInfo = checkRunner.CreateCheckInfo(args);
+            converter.convertCheckInfoToCSV(checkInfo, CSV_RESULT_FILE_NAME);
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            converter.writeErrorToCSV(CSV_RESULT_FILE_NAME, e.getMessage());
+
+        }
     }
 }//проверка на то, что если товара не хватает на скалде - ошибка
