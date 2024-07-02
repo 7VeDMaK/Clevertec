@@ -18,6 +18,7 @@ public class CheckRunner {
             System.err.println("Error loading discount cards or products: " + e.getMessage());
         }
     }
+
     private static void loadDiscountCards() throws IOException {
         try (BufferedReader br = new BufferedReader(new FileReader(CSV_DISCOUNT_CARDS_FILE_NAME))) {
             String line;
@@ -68,37 +69,52 @@ public class CheckRunner {
 
         for (String arg : args) {
             if (arg.startsWith("discountCard=")) {
+                String cardNumberStr = arg.split("=")[1];
+                if (cardNumberStr.length() != 4 || !cardNumberStr.matches("\\d{4}")) {
+                    throw new CheckException("BAD REQUEST");
+                }
                 discountCard = arg;
             } else if (arg.startsWith("balanceDebitCard=")) {
                 balanceDebitCard = arg;
             } else if (arg.contains("-")) {
                 String[] parts = arg.split("-", 2);
                 if (parts.length == 2) {
-                    String productId = parts[0];
+                    int productId = Integer.parseInt(parts[0]);
                     try {
                         int quantity = Integer.parseInt(parts[1]);
-                        productQuantities.merge(productId, quantity, Integer::sum);
-                    } catch (NumberFormatException e) {
-                        System.err.println("Invalid quantity format: " + parts[1]);
+                        Product product = getProductById(productId);
+                        if (product == null) {
+                            throw new CheckException("Product with ID " + productId + " not found.");
+                        }
+                        if (product.getQuantityInStock() < quantity) {
+                            throw new CheckException("Not enough stock for product ID " + productId);
+                        }
+                        productQuantities.merge(parts[0], quantity, Integer::sum);
+                    } catch (Exception e) {
+                        throw new CheckException("BAD REQUEST");
                     }
                 }
             }
         }
-
+        if (productQuantities.isEmpty() || balanceDebitCard == null ||
+                !balanceDebitCard.matches("balanceDebitCard=\\d+(\\.\\d{1,2})?")) {
+            throw new CheckException("BAD REQUEST");
+        } //At least one product must be selected.
         return new CheckInfo(productQuantities, discountCard, balanceDebitCard);
 
     }
 
     public static void main(String[] args) throws IOException {
-        args = new String[]{"3-1", "2-5", "5-1", "3-1", "discountCard=1111", "balanceDebitCard=100.01"};
+        args = new String[]{"3-1", "2-5", "5-1", "3-1", "discountCard=9999", "balanceDebitCard=100.1"};
         CheckRunner checkRunner = new CheckRunner();
         CheckDataToCSVConverter converter = new CheckDataToCSVConverter();
-        System.out.println(Arrays.toString(args));
-        System.out.println(checkRunner.CreateCheckInfo(args));
-        System.out.println();
         try {
+            System.out.println(Arrays.toString(args));
+            System.out.println(checkRunner.CreateCheckInfo(args));
+            System.out.println("-----------------------------------------");
             CheckInfo checkInfo = checkRunner.CreateCheckInfo(args);
             converter.convertCheckInfoToCSV(checkInfo, CSV_RESULT_FILE_NAME);
+            System.out.println("-----------------------------------------");
         } catch (Exception e) {
             System.err.println(e.getMessage());
             converter.writeErrorToCSV(CSV_RESULT_FILE_NAME, e.getMessage());
