@@ -60,7 +60,7 @@ public class CheckRunner {
     public static int getDiscount(Integer cardNumber) {
         if (cardNumber == null) return 0;
         return discountCardMap.getOrDefault(cardNumber, 2);
-    } // Сделать исключения
+    }
 
     public CheckInfo CreateCheckInfo(String[] args) {
         Map<String, Integer> productQuantities = new HashMap<>();
@@ -83,11 +83,9 @@ public class CheckRunner {
                     try {
                         int quantity = Integer.parseInt(parts[1]);
                         Product product = getProductById(productId);
-                        if (product == null) {
-                            throw new CheckException("Product with ID " + productId + " not found.");
-                        }
-                        if (product.getQuantityInStock() < quantity) {
-                            throw new CheckException("Not enough stock for product ID " + productId);
+                        if (product == null || product.getQuantityInStock() < quantity) {
+                            throw new CheckException("Product with ID " + productId + " not found. /" +
+                                    " Not enough stock for product ID " + productId);
                         }
                         productQuantities.merge(parts[0], quantity, Integer::sum);
                     } catch (Exception e) {
@@ -109,10 +107,10 @@ public class CheckRunner {
         CheckRunner checkRunner = new CheckRunner();
         CheckDataToCSVConverter converter = new CheckDataToCSVConverter();
         try {
-            System.out.println(Arrays.toString(args));
-            System.out.println(checkRunner.CreateCheckInfo(args));
-            System.out.println("-----------------------------------------");
             CheckInfo checkInfo = checkRunner.CreateCheckInfo(args);
+            System.out.println(Arrays.toString(args));
+            System.out.println(checkInfo);
+            System.out.println("-----------------------------------------");
             converter.convertCheckInfoToCSV(checkInfo, CSV_RESULT_FILE_NAME);
             System.out.println("-----------------------------------------");
         } catch (Exception e) {
@@ -121,4 +119,4 @@ public class CheckRunner {
 
         }
     }
-}//проверка на то, что если товара не хватает на скалде - ошибка
+}

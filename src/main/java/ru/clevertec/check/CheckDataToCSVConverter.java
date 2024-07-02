@@ -15,7 +15,7 @@ public class CheckDataToCSVConverter {
 
     private String escapeSpecialCharacters(String data) {
         if (data == null) {
-            throw new IllegalArgumentException("Input data cannot be null");
+            throw new CheckException("INTERNAL SERVER ERROR");
         }
         String escapedData = data.replaceAll("\\R", " ");
         if (data.contains(",") || data.contains("\"") || data.contains("'")) {
@@ -112,5 +112,3 @@ public class CheckDataToCSVConverter {
         }
     }
 }
-// если не хватает денег - ошибка
-// если нет дебитовой - без неё пробить
