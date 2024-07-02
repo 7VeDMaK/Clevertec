@@ -105,7 +105,7 @@ public class CheckRunner {
     }
 
     public static void main(String[] args) throws IOException {
-        args = new String[]{"3-1", "2-5", "5-1", "3-1", "discountCard=9999", "balanceDebitCard=100.1"};
+        args = new String[]{"8-5", "2-7", "5-1", "4-1", "discountCard=1111", "balanceDebitCard=100.1"};
         CheckRunner checkRunner = new CheckRunner();
         try {
             CheckInfo checkInfo = checkRunner.CreateCheckInfo(args);
