@@ -6,89 +6,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class CheckRunner {
-    public class Product {
-        private int id;
-        private String description;
-        private double price;
-        private int quantityInStock;
-        private boolean wholesale;
-
-        public Product(int id, String description, double price, int quantityInStock, boolean wholesale) {
-            this.id = id;
-            this.description = description;
-            this.price = price;
-            this.quantityInStock = quantityInStock;
-            this.wholesale = wholesale;
-        }
-
-        public int getId() {
-            return id;
-        }
-
-        public String getDescription() {
-            return description;
-        }
-
-        public double getPrice() {
-            return price;
-        }
-
-        public int getQuantityInStock() {
-            return quantityInStock;
-        }
-
-        public boolean isWholesale() {
-            return wholesale;
-        }
-
-        @Override
-        public String toString() {
-            return "Product{" +
-                    "id=" + id +
-                    ", description='" + description + '\'' +
-                    ", price=" + price +
-                    ", quantityInStock=" + quantityInStock +
-                    ", wholesale=" + wholesale +
-                    '}';
-        }
-    }
-    public class CheckInfo {
-        private Map<String, Integer> productQuantities;
-        private Integer discountCard;
-        private Double balanceDebitCard;
-
-        public CheckInfo(Map<String, Integer> productQuantities, Integer discountCard, Double balanceDebitCard) {
-            this.productQuantities = productQuantities;
-            this.discountCard = discountCard;
-            this.balanceDebitCard = balanceDebitCard;
-        }
-
-        @Override
-        public String toString() {
-            StringBuilder output = new StringBuilder();
-            productQuantities.forEach((id, quantity) -> output.append(id).append("-").append(quantity).append(" "));
-            if (discountCard != null) {
-                output.append(discountCard).append(" ");
-            }
-            if (balanceDebitCard != null) {
-                output.append(balanceDebitCard);
-            }
-            return output.toString().trim();
-        }
-
-        public Map<String, Integer> getProductQuantities() {
-            return productQuantities;
-        }
-
-        public Integer getDiscountCard() {
-            return discountCard;
-        }
-
-        public Double getBalanceDebitCard() {
-            return balanceDebitCard;
-        }
-    }
-
     static final String CSV_RESULT_FILE_NAME = "result.csv";
     static final String CSV_DISCOUNT_CARDS_FILE_NAME = "./src/main/resources/discountCards.csv";
     static final String CSV_PRODUCTS_FILE_NAME = "./src/main/resources/products.csv";
@@ -99,20 +16,11 @@ public class CheckRunner {
     static {
         try {
             loadDiscountCards();
+            loadProducts();
         } catch (IOException e) {
             System.err.println("Error loading discount cards: " + e.getMessage());
         }
-
     }
-
-    {
-        try {
-            loadProducts();
-        } catch (IOException e) {
-            System.err.println("Error loading products: " + e.getMessage());
-        }
-    }
-
 
     public String escapeSpecialCharacters(String data) {
         if (data == null) {
@@ -186,8 +94,9 @@ public class CheckRunner {
     private static void loadDiscountCards() throws IOException {
         try (BufferedReader br = new BufferedReader(new FileReader(CSV_DISCOUNT_CARDS_FILE_NAME))) {
             String line;
+            br.readLine();
             while ((line = br.readLine()) != null) {
-                String[] values = line.split(" ");
+                String[] values = line.split(",");
                 if (values.length == 3) {
                     Integer number = Integer.parseInt(values[1]);
                     int discount = Integer.parseInt(values[2]);
@@ -197,12 +106,15 @@ public class CheckRunner {
         }
     }
 
-    private void loadProducts() throws IOException {
+
+    private static void loadProducts() throws IOException {
         try (BufferedReader br = new BufferedReader(new FileReader(CSV_PRODUCTS_FILE_NAME))) {
             String line;
+            // Skip the header line
+            br.readLine();
             while ((line = br.readLine()) != null) {
-                String[] values = line.split(" ");
-                if (values.length == 6) {
+                String[] values = line.split(",");
+                if (values.length == 5) {
                     int id = Integer.parseInt(values[0]);
                     String description = values[1];
                     double price = Double.parseDouble(values[2]);
@@ -212,8 +124,8 @@ public class CheckRunner {
                 }
             }
         }
-        System.out.println(productMap.toString());
     }
+
 
     public static Product getProductById(int id) {
         return productMap.get(id);
@@ -227,6 +139,7 @@ public class CheckRunner {
     }
 
     public static void main(String[] args) throws IOException {
+        args = new String[]{"3-1","2-5","5-1","3-1","discountCard=1211","balanceDebitCard=100"};
         CheckRunner checkRunner = new CheckRunner();
         System.out.println(Arrays.toString(args));
         System.out.println(checkRunner.printAllInfo(args));
@@ -241,3 +154,4 @@ public class CheckRunner {
         }
     }
 }
+//TODO Нужно сделать класс чека
