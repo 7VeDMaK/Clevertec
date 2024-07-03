@@ -1,2 +1,11 @@
-ERROR
-java.io.FileNotFoundException: .\products.csv (Не удается найти указанный файл)
+Date;Time
+04-07-2024;00:45:11
+
+QTY;DESCRIPTION;PRICE;DISCOUNT;TOTAL
+2;Packed potatoes 1kg;1.47$;0.09$;2.94$
+
+DISCOUNT CARD;DISCOUNT PERCENTAGE
+1111;3%
+
+TOTAL PRICE;TOTAL DISCOUNT;TOTAL WITH DISCOUNT
+2.94$;0.09$;2.85$

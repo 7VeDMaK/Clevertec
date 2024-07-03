@@ -1,5 +1,7 @@
 package main.java.ru.clevertec.check.Repository;
 
+import main.java.ru.clevertec.check.Exception.CheckException;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -14,15 +16,15 @@ public class DiscountCSVRepository extends CSVRepository<Integer, Integer> {
             String line;
             br.readLine();
             while ((line = br.readLine()) != null) {
-                String[] values = line.split(",");
+                String[] values = line.split(";");
                 if (values.length == 3) {
                     Integer number = Integer.parseInt(values[1]);
                     int discount = Integer.parseInt(values[2]);
                     repositoryMap.put(number, discount);
                 }
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            throw new CheckException("BAD REQUEST");
         }
     }
 

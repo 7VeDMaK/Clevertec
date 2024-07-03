@@ -9,9 +9,6 @@ public class CheckExecutor {
 
     private String resultFileName;
 
-    private String discountFileName;
-
-    private String productFileName;
     private final CheckFactory factory;
 
     private final CSVWriter writer = new CSVWriter();
@@ -25,7 +22,6 @@ public class CheckExecutor {
     CheckExecutor(String discountCardsFileName) {
         factory = new CheckFactory();
         factory.loadDiscountRepository(discountCardsFileName);
-        this.resultFileName = resultFileName;
     }
 
     CheckExecutor() {
@@ -34,14 +30,6 @@ public class CheckExecutor {
 
     public void setResultFileName(String resultFileName) {
         this.resultFileName = resultFileName;
-    }
-
-    public void setDiscountFileName(String discountFileName) {
-        this.discountFileName = discountFileName;
-    }
-
-    public void setProductFileName(String productFileName) {
-        this.productFileName = productFileName;
     }
 
     public boolean loadRepositoriesFromArgs(String[] args) {
@@ -59,7 +47,6 @@ public class CheckExecutor {
         if (pathToFile == null || saveToFile == null) {
             return false;
         }
-
         factory.loadProductRepository(pathToFile);
         resultFileName = saveToFile;
         return true;
@@ -71,7 +58,6 @@ public class CheckExecutor {
                 if (!loadRepositoriesFromArgs(args))
                     throw new CheckException("BAD REQUEST");
             }
-
             Check checkInfo = factory.createCheck(args);
             System.out.println("-----------------------------------------");
             List<String[]> data = converter.convertCheckInfoToCSV(checkInfo,

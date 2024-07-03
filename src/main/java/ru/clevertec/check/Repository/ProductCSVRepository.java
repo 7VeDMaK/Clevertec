@@ -1,6 +1,7 @@
 package main.java.ru.clevertec.check.Repository;
 
 import main.java.ru.clevertec.check.Entity.Product;
+import main.java.ru.clevertec.check.Exception.CheckException;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -14,18 +15,18 @@ public class ProductCSVRepository extends CSVRepository<Integer, Product> {
             // Skip the header line
             br.readLine();
             while ((line = br.readLine()) != null) {
-                String[] values = line.split(",");
+                String[] values = line.split(";");
                 if (values.length == 5) {
                     int id = Integer.parseInt(values[0]);
                     String description = values[1];
                     double price = Double.parseDouble(values[2]);
                     int quantityInStock = Integer.parseInt(values[3]);
-                    boolean wholesale = values[4].equals("+");
+                    boolean wholesale = Boolean.parseBoolean(values[4]);
                     repositoryMap.put(id, new Product(id, description, price, quantityInStock, wholesale));
                 }
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            throw new CheckException("BAD REQUEST");
         }
     }
 }
