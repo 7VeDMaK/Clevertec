@@ -1,4 +1,4 @@
-package main.java.ru.clevertec.check;
+package main.java.ru.clevertec.check.Entity;
 
 public record Product(int id, String description, double price, int quantityInStock, boolean wholesale) {
 

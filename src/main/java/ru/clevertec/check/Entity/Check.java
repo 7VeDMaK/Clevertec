@@ -1,17 +1,23 @@
-package main.java.ru.clevertec.check;
+package main.java.ru.clevertec.check.Entity;
 
 import java.util.Map;
 
-public class CheckInfo {
+public class Check {
     private final Map<String, Integer> productQuantities;
     private Integer discountCard = null;
     private final Double balanceDebitCard;
 
-    public CheckInfo(Map<String, Integer> productQuantities, String discountCard, String balanceDebitCard) {
+    public Check(Map<String, Integer> productQuantities, String discountCard, String balanceDebitCard) {
         this.productQuantities = productQuantities;
         if (discountCard != null)
             this.discountCard = Integer.parseInt(discountCard.split("=")[1]);
         this.balanceDebitCard = Double.parseDouble(balanceDebitCard.split("=")[1]);
+    }
+
+    public Check(Map<String, Integer> productQuantities, Integer discountCard, Double balanceDebitCard) {
+        this.productQuantities = productQuantities;
+        this.discountCard = discountCard;
+        this.balanceDebitCard = balanceDebitCard;
     }
 
     @Override

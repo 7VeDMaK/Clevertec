@@ -1,7 +1,6 @@
 package main.java.ru.clevertec.check.Repository;
 
-import main.java.ru.clevertec.check.Product;
-import main.java.ru.clevertec.check.Repository.CSVRepository;
+import main.java.ru.clevertec.check.Entity.Product;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

@@ -1,7 +1,5 @@
 package main.java.ru.clevertec.check.Repository;
 
-import main.java.ru.clevertec.check.Repository.CSVRepository;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -28,7 +26,7 @@ public class DiscountCSVRepository extends CSVRepository<Integer, Integer> {
     }
 
     @Override
-    public Integer get(Integer key){
+    public Integer get(Integer key) {
         if (key == null) return 0;
         return repositoryMap.getOrDefault(key, 2);
     }
