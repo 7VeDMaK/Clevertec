@@ -8,31 +8,15 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class CheckDataToCSVConverter {
-
-    private String escapeSpecialCharacters(String data) {
-        if (data == null) {
-            throw new CheckException("INTERNAL SERVER ERROR");
-        }
-        String escapedData = data.replaceAll("\\R", " ");
-        if (data.contains(",") || data.contains("\"") || data.contains("'")) {
-            data = data.replace("\"", "\"\"");
-            escapedData = "\"" + data + "\"";
-        }
-        return escapedData;
-    }
 
     private String formatPrice(double price) {
         return String.format("%.2f$", price);
     }
 
     private String convertToCSV(String[] data) {
-        return Stream.of(data)
-                .map(this::escapeSpecialCharacters)
-                .collect(Collectors.joining(";"));
+        return String.join(";", data);
     }
 
     public void convertCheckInfoToCSV(CheckInfo checkInfo, String fileName) throws IOException {
@@ -79,7 +63,6 @@ public class CheckDataToCSVConverter {
                     formatPrice(itemTotal)
             });
         }
-
         if (checkInfo.getBalanceDebitCard() < total - totalDiscount) {
             throw new CheckException("NOT ENOUGH MONEY");
         }
@@ -95,20 +78,6 @@ public class CheckDataToCSVConverter {
 
         dataLines.forEach(line -> System.out.println(convertToCSV(line)));
 
-        File csvOutputFile = new File(fileName);
-        try (PrintWriter pw = new PrintWriter(csvOutputFile)) {
-            dataLines.stream()
-                    .map(this::convertToCSV)
-                    .forEach(pw::println);
-        }
-    }
 
-    public void writeErrorToCSV(String fileName, String errorMessage) {
-        try (PrintWriter pw = new PrintWriter(fileName)) {
-            pw.println("ERROR");
-            pw.println(errorMessage);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }

@@ -68,7 +68,8 @@ public class CheckRunner {
         return discountCardMap.getOrDefault(cardNumber, 2);
     }
 
-    public CheckInfo CreateCheckInfo(String[] args) {
+    public static CheckInfo CreateCheckInfo(String[] args) {
+
         Map<String, Integer> productQuantities = new HashMap<>();
         String discountCard = null;
         String balanceDebitCard = null;
@@ -101,7 +102,7 @@ public class CheckRunner {
             }
         }
         if (productQuantities.isEmpty() || balanceDebitCard == null ||
-                !balanceDebitCard.matches("balanceDebitCard=\\d+(\\.\\d{1,2})?")) {
+                !balanceDebitCard.matches("balanceDebitCard=-?\\d+(\\.\\d{1,2})?")) {
             throw new CheckException("BAD REQUEST");
         } //At least one product must be selected.
         return new CheckInfo(productQuantities, discountCard, balanceDebitCard);
@@ -109,9 +110,8 @@ public class CheckRunner {
     }
 
     public static void main(String[] args) {
-        CheckRunner checkRunner = new CheckRunner();
         try {
-            CheckInfo checkInfo = checkRunner.CreateCheckInfo(args);
+            CheckInfo checkInfo = CheckRunner.CreateCheckInfo(args);
             System.out.println(Arrays.toString(args));
             System.out.println(checkInfo);
             System.out.println("-----------------------------------------");
