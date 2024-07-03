@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class CheckRunner {
@@ -14,13 +15,15 @@ public class CheckRunner {
     private static final Map<Integer, Integer> discountCardMap = new HashMap<>();
     private static final Map<Integer, Product> productMap = new HashMap<>();
     private static final CheckDataToCSVConverter converter = new CheckDataToCSVConverter();
+    private static final CSVWriter writer = new CSVWriter();
+
 
     static {
         try {
             loadDiscountCards();
             loadProducts();
         } catch (IOException e) {
-            converter.writeErrorToCSV(CSV_RESULT_FILE_NAME, "INTERNAL SERVER ERROR");
+            writer.writeError(CSV_RESULT_FILE_NAME, "INTERNAL SERVER ERROR");
             throw new CheckException("INTERNAL SERVER ERROR");
         }
     }
@@ -115,11 +118,13 @@ public class CheckRunner {
             System.out.println(Arrays.toString(args));
             System.out.println(checkInfo);
             System.out.println("-----------------------------------------");
-            converter.convertCheckInfoToCSV(checkInfo, CSV_RESULT_FILE_NAME);
+            List<String[]> data = converter.convertCheckInfoToCSV(checkInfo);
+            data.forEach(line -> System.out.println(String.join(";", line)));
+            writer.writeData(data, CSV_RESULT_FILE_NAME);
             System.out.println("-----------------------------------------");
         } catch (Exception e) {
             System.err.println(e.getMessage());
-            converter.writeErrorToCSV(CSV_RESULT_FILE_NAME, e.getMessage());
+            writer.writeError(CSV_RESULT_FILE_NAME, e.getMessage());
         }
     }
 }

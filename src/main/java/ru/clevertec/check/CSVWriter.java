@@ -5,9 +5,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 
-public class CSVConverter {
+public class CSVWriter {
 
-    private String convertData(String[] data) {
+    public String convertData(String[] data) {
         return String.join(";", data);
     }
 
