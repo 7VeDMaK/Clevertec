@@ -1,8 +1,5 @@
 package main.java.ru.clevertec.check;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -36,9 +33,9 @@ public class CheckDataToCSVConverter {
             productId = Integer.parseInt(entry.getKey());
             product = CheckRunner.getProductById(productId);
             int quantity = entry.getValue();
-            double price = product.getPrice();
+            double price = product.price();
             double itemTotal = price * quantity;
-            double discountPercentage = (quantity >= 5 && product.isWholesale()) ? 10.0 :
+            double discountPercentage = (quantity >= 5 && product.wholesale()) ? 10.0 :
                     CheckRunner.getDiscount(checkInfo.getDiscountCard());
             double discount = (double) Math.round(itemTotal * discountPercentage) / 100;
 
@@ -47,7 +44,7 @@ public class CheckDataToCSVConverter {
 
             dataLines.add(new String[]{
                     String.valueOf(quantity),
-                    product.getDescription(),
+                    product.description(),
                     priceFormatter.format(price),
                     priceFormatter.format(discount),
                     priceFormatter.format(itemTotal)
@@ -66,6 +63,7 @@ public class CheckDataToCSVConverter {
         dataLines.add(new String[]{"TOTAL PRICE", "TOTAL DISCOUNT", "TOTAL WITH DISCOUNT"});
         dataLines.add(new String[]{priceFormatter.format(total),
                 priceFormatter.format(totalDiscount), priceFormatter.format(total - totalDiscount)});
+
         return dataLines;
     }
 }

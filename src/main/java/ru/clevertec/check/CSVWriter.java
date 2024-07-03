@@ -11,14 +11,13 @@ public class CSVWriter {
         return String.join(";", data);
     }
 
-    public boolean writeData(List<String[]> dataLines, String fileName) throws IOException {
+    public void writeData(List<String[]> dataLines, String fileName) throws IOException {
         File csvOutputFile = new File(fileName);
         try (PrintWriter pw = new PrintWriter(csvOutputFile)) {
             dataLines.stream()
                     .map(this::convertData)
                     .forEach(pw::println);
         }
-        return true;
     }
 
     public void writeError(String fileName, String errorMessage) {
@@ -30,4 +29,3 @@ public class CSVWriter {
         }
     }
 }
-//его задача конвертировать некую дату

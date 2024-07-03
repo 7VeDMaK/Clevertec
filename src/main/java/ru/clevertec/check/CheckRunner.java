@@ -93,7 +93,7 @@ public class CheckRunner {
                     try {
                         int quantity = Integer.parseInt(parts[1]);
                         Product product = getProductById(productId);
-                        if (product == null || product.getQuantityInStock() < quantity) {
+                        if (product == null || product.quantityInStock() < quantity) {
                             throw new CheckException("Product with ID " + productId + " not found. /" +
                                     " Not enough stock for product ID " + productId);
                         }
