@@ -9,6 +9,7 @@ public class DiscountCSVRepository extends CSVRepository<Integer, Integer> {
 
     @Override
     public void load(String fileName) {
+
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
             String line;
             br.readLine();

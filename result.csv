@@ -1,11 +1,2 @@
-Date;Time
-03-07-2024;18:59:08
-
-QTY;DESCRIPTION;PRICE;DISCOUNT;TOTAL
-30;Packed potatoes 1kg;1.47$;1.32$;44.10$
-
-DISCOUNT CARD;DISCOUNT PERCENTAGE
-1111;3%
-
-TOTAL PRICE;TOTAL DISCOUNT;TOTAL WITH DISCOUNT
-44.10$;1.32$;42.78$
+ERROR
+java.io.FileNotFoundException: .\products.csv (Не удается найти указанный файл)

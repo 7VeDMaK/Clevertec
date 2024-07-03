@@ -2,6 +2,7 @@ package main.java.ru.clevertec.check;
 
 import main.java.ru.clevertec.check.Entity.Check;
 import main.java.ru.clevertec.check.Entity.Product;
+import main.java.ru.clevertec.check.Exception.CheckException;
 import main.java.ru.clevertec.check.Repository.DiscountCSVRepository;
 import main.java.ru.clevertec.check.Repository.ProductCSVRepository;
 import main.java.ru.clevertec.check.Validator.CheckFactoryValidator;
@@ -17,7 +18,8 @@ public class CheckFactory {
     private final CheckFactoryValidator validator = new CheckFactoryValidator();
 
     CheckFactory(String discountCardsFileName, String productsFileName) {
-        loadRepositories(discountCardsFileName, productsFileName);
+        loadDiscountRepository(discountCardsFileName);
+        loadProductRepository(productsFileName);
     }
 
     CheckFactory() {
@@ -31,16 +33,21 @@ public class CheckFactory {
         return productRepository;
     }
 
-    public void loadRepositories(String discountCardsFileName, String productsFileName) {
+    public void loadDiscountRepository(String discountCardsFileName) {
         discountRepository.load(discountCardsFileName);
+    }
+    public void loadProductRepository(String productsFileName) {
         productRepository.load(productsFileName);
+    }
+
+    public boolean areRepositoriesEmpty() {
+        return discountRepository.isEmpty() || productRepository.isEmpty();
     }
 
     public Check createCheck(String[] args) {
         Map<String, Integer> productQuantities = new HashMap<>();
         String discountCard = null;
         String balanceDebitCard = null;
-
         for (String arg : args) {
             if (arg.startsWith("discountCard=")) {
                 validator.validateDiscountCard(arg);

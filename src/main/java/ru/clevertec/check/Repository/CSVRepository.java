@@ -17,4 +17,8 @@ public abstract class CSVRepository<K, V> {
         repositoryMap.put(key, value);
     }
 
+    public boolean isEmpty(){
+        return repositoryMap.isEmpty();
+    }
+
 }

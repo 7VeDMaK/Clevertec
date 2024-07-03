@@ -21,7 +21,9 @@ public class CSVWriter {
     }
 
     public void writeError(String fileName, String errorMessage) {
-        try (PrintWriter pw = new PrintWriter(fileName)) {
+        if (fileName == null) fileName = "result.csv";
+        File csvOutputFile = new File(fileName);
+        try (PrintWriter pw = new PrintWriter(csvOutputFile)) {
             pw.println("ERROR");
             pw.println(errorMessage);
         } catch (IOException e) {
