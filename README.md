@@ -17,13 +17,13 @@ This application generates check outputs in CSV format based on provided input a
    To run the application, use the following command structure:
 
    ```bash
-   java -cp ./out main.java.ru.clevertec.check.CheckRunner id-quantity discountCard=xxxx balanceDebitCard=xxxx
+   java -cp ./out main.java.ru.clevertec.check.CheckRunner id-quantity discountCard=xxxx balanceDebitCard=xxxx pathToFile=XXXX saveToFile=xxxx
    ```
 
-   Replace `id-quantity`, `discountCard=xxxx`, and `balanceDebitCard=xxxx` with your specific arguments. Here's an example:
+   Replace `id-quantity`, `discountCard=xxxx`, `balanceDebitCard=xxxx`, `pathToFile=XXXX` and `saveToFile=xxxx` with your specific arguments. Here's an example:
 
    ```bash
-   java -cp ./out main.java.ru.clevertec.check.CheckRunner 3-1 discountCard=1111 balanceDebitCard=100.1
+   java -cp ./out main.java.ru.clevertec.check.CheckRunner 4-2 discountCard=1111 balanceDebitCard=110.01 pathToFile=./src/main/resources/products.csv saveToFile=./result.csv
    ```
 
 3. **Output**
